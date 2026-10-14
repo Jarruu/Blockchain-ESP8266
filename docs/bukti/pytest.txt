@@ -1,0 +1,51 @@
+# Bukti: Unit Test & Integrasi
+
+Perintah: `python -m pytest -v`
+Tanggal: 2026-10-13 (arsitektur 1 node utama + 4 light node Wokwi, endpoint /snapshot)
+Hasil: **20 passed**
+
+> Dijalankan ulang setelah revisi (light node ikut sinkronisasi + verifikasi
+> chain + endpoint /snapshot). Output final di bawah.
+
+```
+$ python -m pytest -v
+============================= test session starts =============================
+platform win32 -- Python 3.15.0, pytest-9.1.1, pluggy-1.6.0
+collected 20 items
+
+tests/test_blockchain.py::test_genesis_is_single_and_valid PASSED        [  5%]
+tests/test_blockchain.py::test_mined_block_meets_pow PASSED              [ 10%]
+tests/test_blockchain.py::test_tampering_is_detected PASSED              [ 15%]
+tests/test_blockchain.py::test_reward_goes_to_miner PASSED               [ 20%]
+tests/test_blockchain.py::test_transfer_moves_balance PASSED             [ 25%]
+tests/test_blockchain.py::test_replace_chain_accepts_longer_valid PASSED [ 30%]
+tests/test_blockchain.py::test_replace_chain_rejects_longer_invalid PASSED [ 35%]
+tests/test_blockchain.py::test_replace_chain_rejects_shorter PASSED      [ 40%]
+tests/test_blockchain.py::test_add_transaction_rejects_nonpositive PASSED [ 45%]
+tests/test_chain_contract.py::test_chain_fields_are_extractable_and_linked PASSED [ 50%]
+tests/test_chain_contract.py::test_snapshot_carries_balance_for_lcd PASSED [ 55%]
+tests/test_chain_contract.py::test_verifier_rejects_broken_link PASSED   [ 60%]
+tests/test_node.py::test_status_and_chain PASSED                         [ 65%]
+tests/test_node.py::test_mine_returns_block PASSED                       [ 70%]
+tests/test_node.py::test_trigger_requires_api_key PASSED                 [ 75%]
+tests/test_node.py::test_bad_json_returns_400 PASSED                     [ 80%]
+tests/test_node.py::test_zero_amount_rejected PASSED                     [ 85%]
+tests/test_node.py::test_missing_field_rejected PASSED                   [ 90%]
+tests/test_node.py::test_resolve_survives_dead_peer PASSED               [ 95%]
+tests/test_node.py::test_chain_persisted_across_restart PASSED           [100%]
+
+============================= 20 passed in 2.67s ==============================
+
+$ python tests/test_chain_contract.py
+OK: parser & verifier sketch cocok dengan /snapshot Flask
+```
+
+## Cakupan
+
+- `tests/test_blockchain.py` (9 tes): genesis, PoW, deteksi tamper, reward,
+  transfer, konsensus (terima/tolak chain), validasi amount.
+- `tests/test_node.py` (8 tes): status, mine, `/trigger` wajib API-key,
+  validasi JSON/amount/field, peer mati tidak crash, persistensi restart.
+- `tests/test_chain_contract.py` (3 tes): parser & verifier sketch Wokwi
+  terhadap output `/snapshot` asli Flask — chain tersambung terdeteksi valid,
+  saldo miner terbaca untuk LCD, dan tautan yang diputus terdeteksi `BAD`.

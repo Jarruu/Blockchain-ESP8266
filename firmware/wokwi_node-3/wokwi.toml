@@ -1,0 +1,7 @@
+; Konfigurasi Wokwi for VS Code.
+; Jalankan: F1 -> "Wokwi: Start Simulator".
+; Board & firmware mengikuti hasil build PlatformIO (platformio.ini).
+[wokwi]
+version = 1
+firmware = ".pio/build/esp32dev/firmware.bin"
+elf = ".pio/build/esp32dev/firmware.elf"
